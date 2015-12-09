@@ -140,10 +140,9 @@ function manage_container() {
 				elif [[ ! -z `docker ps --filter=name=${2} | \
 					grep --ignore-case paused` ]]
 				then
-					echo -n "Error: Container [${2}] must "
-					echo "be running or stopped."
+					echo -n "Error: Container [${2}] must be running or stopped."
 				fi
-			elif [[ ! -z `docker ps --all=true | grep ${2}` ]]
+			elif [[ ! -z `docker ps --all | grep ${2}` ]]
 			then
 				echo "Terminating container [${2}]."
 				docker rm ${2} > /dev/null 2>&1
@@ -155,23 +154,23 @@ function manage_container() {
 		pause)
 			if [[ ! -z `docker ps --filter=name=${2}` ]]
 			then
-				if [[ ! -z `docker ps --filter=name=${2} | \
+				if [[ ! -z `docker ps --all --filter=name=${2} | grep ${2} | \
 					grep --ignore-case --invert-match paused` &&  \
-					! -z `docker ps --all=true | \
-					grep ${2} | \
+					! -z `docker ps --all --filter=name=${2} | grep ${2} | \
 					grep --ignore-case --invert-match exited` ]]
 				then
 					echo "Pausing container [${2}]."
 					docker pause ${2} > /dev/null 2>&1
+				elif [[ -z `docker ps --all --filter=name=${2} | grep ${2}` ]]
+				then
+					echo "Error: Container [${2}] does not exist."
 				else
-					echo -n "Error: Container [${2}] is not "
-					echo "running and cannot be paused."
+					echo -n "Error: Container [${2}] is not running and cannot be stopped."
 					retcode=-1
 				fi
-			elif [[ ! -z `docker ps --all=true | grep ${2}` ]]
+			elif [[ ! -z `docker ps --all | grep ${2}` ]]
 			then
-				echo -n "Error: Container [${2}] is not running "
-				echo "and cannot be paused."
+				echo -n "Error: Container [${2}] is not running and cannot be stopped."
 			else
 				echo "Error: Container [${2}] does not exist."
 				retcode=-1
@@ -183,7 +182,7 @@ function manage_container() {
 			then
 				echo "Unpausing container [${2}]."
 				docker unpause ${2} > /dev/null 2>&1
-			elif [[ ! -z `docker ps --all=true | grep ${2}` ]]
+			elif [[ ! -z `docker ps --all | grep ${2}` ]]
 			then
 				echo "Error: Container [${2}] is not paused."
 			else
@@ -193,18 +192,16 @@ function manage_container() {
 			;;
 		start)
 			if [[ -z `docker ps --filter=name=${2} | grep ${2}` && \
-				! -z `docker ps --all=true | grep ${2}` ]]
+				! -z `docker ps --all --filter=name=${2} | grep ${2}` ]]
 			then
 				echo "Starting container [${2}]."
 				docker start ${2} > /dev/null 2>&1
-			elif [[ !  -z `docker ps --filter=name=${2}` && \
-				-z `docker ps --filter=name=${2} | \
-			       	grep -v Paused` ]]
+			elif [[ !  -z `docker ps --all --filter=name=${2} | grep ${2} | \
+				grep --ignore-case paused` ]]
 			then
-				echo -n "Error: Container [${2}] is already "
-				echo "running."
-			elif [[ ! -z `docker ps --filter=name=${2} | \
-				grep Paused` ]]
+				echo "Error: Container [${2}] is already running."
+			elif [[ ! -z `docker ps --all --filter=name=${2} | grep ${2} | \
+				grep --ignore-case paused` ]]
 			then
 				echo "Error: Container [${2}] is paused."
 			else
@@ -215,12 +212,12 @@ function manage_container() {
 		stop)
 			if [[ -z `docker ps --filter=name=^${2} | \
 				grep --ignore-case paused` && \
-				-z `docker ps --all=true | grep ^${2} | \
+				-z `docker ps --all | grep ^${2} | \
 				grep --ignore-case exited` ]]
 			then
 				echo "Stopping container [${2}]."
 				docker stop ${2} > /dev/null 2>&1
-			elif [[ ! -z `docker ps --all=true | grep ^${2}` ]]
+			elif [[ ! -z `docker ps --all | grep ^${2}` ]]
 			then
 				echo "Error: Container [${2}] is not running."
 			else
@@ -232,8 +229,11 @@ function manage_container() {
 			if [ -z ${2} ]
 			then
 				docker ps -a
+			elif [[ ! -z `docker ps --all --filter=name=${2} | grep ${2}` ]]
+			then
+				docker ps --all --filter=name=${2}
 			else
-				docker ps --filter=name=${2}
+				echo "Error: Container [${2}] does not exist."
 			fi
 			;;
 		*)
