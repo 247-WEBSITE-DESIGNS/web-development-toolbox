@@ -54,7 +54,8 @@ RUN     apt-get install --yes --no-install-recommends \
         wget \
         ca-certificates \
 		zip \
-		unzip
+		unzip \
+		cmake
 
 
 # Git command line client
@@ -130,6 +131,7 @@ ADD		index.html ${HOME}/www/index.html
 
 RUN     apt-get install --yes screen vim \
         && echo "alias vi=vim" >> ${HOME}/.bashrc \
+		&& apt-get install --yes python-dev \
         && curl -fLo ${HOME}/.vim/autoload/plug.vim --create-dirs \
 			https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
