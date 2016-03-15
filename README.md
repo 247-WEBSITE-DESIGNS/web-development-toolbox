@@ -89,9 +89,8 @@ highlighting within vim is desired, otherwise skip it.
 
 	$ cd ~/.vim/plugged && ./install.sh --clang-completer && cd ~
 
-Several vim text editor plug-ins for syntax highlighting are pre-configured but 
-must be activated by accessing the command line via WeTTY as indicated above
-and typing these commands each time the text editor is launched:
+Several vim text editor plug-ins for syntax highlighting are pre-configured and
+automatically activated each time the text editor is launched:
 
     $ vi
 
