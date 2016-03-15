@@ -59,8 +59,8 @@ browser.
 
 	WeTTY:		http://127.0.0.1:8002
 
-				UserID: pythonista
-				Password: python 
+				UserID: webdev 
+				Password: website 
 
 				To enable the terminal/console management utility 
 				type 'screen' and press ENTER.
